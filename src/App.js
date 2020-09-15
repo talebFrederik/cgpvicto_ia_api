@@ -1,26 +1,97 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Axios from 'axios';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      file: '',
+      img: '',
+      imgData: '',
+      analyse: []
+    }
+
+    this.handleImageChange = this.handleImageChange.bind(this);
+    this.handleAnalyseClick = this.handleAnalyseClick.bind(this);
+  }
+
+  handleImageChange(e) {
+    let reader = new FileReader();
+    let file = e.target.files[0]
+
+    reader.onloadend = () => {
+      this.setState({
+        file: file,
+        img: reader.result,
+        imgData: reader.result.slice(reader.result.indexOf(',') + 1),
+
+      });
+    }
+
+    reader.readAsDataURL(file);
+  }
+
+  handleAnalyseClick() {
+    let data = {
+      "requests": [
+        {
+          "image": {
+            "content": this.state.imgData,
+          },
+          "features": [
+            {
+              "type": "LABEL_DETECTION",
+              "maxResults": 10
+            },
+            {
+              "type": "FACE_DETECTION",
+              "maxResults": 10
+            },
+            {
+              "type": "LANDMARK_DETECTION",
+              "maxResults": 10
+            }
+          ]
+        }
+      ]
+    };
+
+    Axios.post("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCzKoWps5JCdNVu-EBtyKWWrOxanMQGZag", data)
+      .then((response) => {
+        console.log(response.data);
+        this.setState({ analyse: response.data.responses[0].labelAnnotations });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  render() {
+    return (
+      <div className="App" >
+        <div>
+          <input type="file" onChange={this.handleImageChange} />
+        </div>
+        <div>
+          <img src={this.state.img} alt="aucune" />
+        </div>
+        <div>
+          <button onClick={this.handleAnalyseClick}>Analyser</button>
+        </div>
+        <div>
+          {this.state.analyse.map((label) => {
+            return (
+              <div key={label.description}>
+                {label.description}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
 }
 
 export default App;
