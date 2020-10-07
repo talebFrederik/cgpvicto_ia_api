@@ -55,7 +55,7 @@ class App extends React.Component {
       ]
     };
 
-    Axios.post("https://vision.googleapis.com/v1/images:annotate?key=VotreCleAPIici", data)
+    Axios.post("https://vision.googleapis.com/v1/images:annotate?key=MaCleAPIici", data)
       .then((response) => {
         console.log(response.data);
         this.setState({ analyse: response.data.responses[0] });
