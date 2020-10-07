@@ -9,7 +9,8 @@ class App extends React.Component {
       file: '',
       img: '',
       imgData: '',
-      analyse: []
+      analyse: [],
+      is_monkey: false,
     }
 
     this.handleImageChange = this.handleImageChange.bind(this);
@@ -42,32 +43,39 @@ class App extends React.Component {
           "features": [
             {
               "type": "LABEL_DETECTION",
-              "maxResults": 10
             },
             {
               "type": "FACE_DETECTION",
-              "maxResults": 10
             },
             {
               "type": "LANDMARK_DETECTION",
-              "maxResults": 10
             }
           ]
         }
       ]
     };
 
-    Axios.post("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCzKoWps5JCdNVu-EBtyKWWrOxanMQGZag", data)
+    Axios.post("https://vision.googleapis.com/v1/images:annotate?key=VotreCleAPIici", data)
       .then((response) => {
         console.log(response.data);
-        this.setState({ analyse: response.data.responses[0].labelAnnotations });
+        this.setState({ analyse: response.data.responses[0] });
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
+  handleAfficherClick(){
+    this.state.analyse.labelAnnotations.array.forEach(this.verification);
+  }
+
+  verification(value){
+    let is_monkey = value.description.contains("Wrestler");
+    
+  }
+
   render() {
+
     return (
       <div className="App" >
         <div>
@@ -80,13 +88,10 @@ class App extends React.Component {
           <button onClick={this.handleAnalyseClick}>Analyser</button>
         </div>
         <div>
-          {this.state.analyse.map((label) => {
-            return (
-              <div key={label.description}>
-                {label.description}
-              </div>
-            );
-          })}
+          <button >Afficher les résultats</button>
+        </div>
+        <div>
+          {analyse.map}
         </div>
       </div>
     );
