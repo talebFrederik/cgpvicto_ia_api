@@ -46,6 +46,9 @@ class App extends React.Component {
             },
             {
               "type": "FACE_DETECTION",
+            },
+            {
+              "type": "LANDMARK_DETECTION",
             }
           ]
         }
